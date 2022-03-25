@@ -9,7 +9,7 @@ import FilScreen from "./src/Screens/fil";
 // import DashBoadScreen from "./src/Screens/dashBoard";
 // import BusinessProfileScreen from "./src/Screens/BusinessProfile";
 // import AdminProfileScreen from "./src/Screens/adminProfile"
-// import AdminEdit from "./src/Screens/adminEdit";
+import ProfileEdit from "./src/Screens/EditProfile";
 // import ConfirmEmailScreen from "./src/Screens/ConfirmEmailScreen.js"
 // import ForgotPasswordScreen from "./src/Screens/ForgotPasswordScreen"
 // import NewPasswordScreen from "./src/Screens/NewPasswordScreen"
@@ -163,6 +163,24 @@ export default function App() {
         component={UpdateScreen} 
         options={{
           title: 'Edit',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            color: "white",
+            fontWeight: "600"
+          },
+          headerStyle: {
+            backgroundColor: '#013220',
+            shadowColor: '#013220',
+            elevation: 0,
+          },
+          headerBackTitleVisible: false,
+        }}
+          />
+                            <Stack.Screen 
+        name="ProfileEdit" 
+        component={ProfileEdit} 
+        options={{
+          title: 'Edit Profile',
           headerTitleAlign: 'center',
           headerTitleStyle: {
             color: "white",

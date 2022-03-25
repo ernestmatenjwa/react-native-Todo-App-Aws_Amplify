@@ -1,16 +1,5 @@
 import * as React from 'react';
 import { Text,  Dimensions, StyleSheet, View, Alert,Pressable } from 'react-native';
-import { StatusBar } from "expo-status-bar";
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {LinearGradient} from 'expo-linear-gradient';
-import { Input } from 'react-native-elements';
-import img from "../../assets/pictures/person.png"
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { API, graphqlOperation, Auth } from "aws-amplify";
-import { getAdmin } from '../graphql/queries';
-import { getCarwash } from '../graphql/queries';
-import { updateUser } from '../graphql/mutations';
-import Modal from "react-native-modal";
 import CustomInput from '../components/cus';
 import {useForm} from 'react-hook-form';
 
@@ -24,6 +13,7 @@ export default function ProfileEdit({ navigation, route }) {
   const {control, handleSubmit, watch} = useForm();
  
   const apd = async data => {
+    return
     const {email: email, name: name, phone: phone} = data;
     try{
         const admin = {

@@ -11,8 +11,9 @@ const CustomInput = ({
   rules = {},
   placeholder,
   defaultValue,
-  secureTextEntry
-  
+  secureTextEntry,
+  multiline,
+  numberOfLines,
 }) => {
   return (
     <Controller
@@ -28,17 +29,13 @@ const CustomInput = ({
               {borderColor: error ? 'red' : '#e8e8e8'},
             ]}>
             <Input
-                 inputContainerStyle={styles.inputContainer}
-                 inputStyle ={styles.inputText}                
-                 rightIcon={<Icon size={24} 
-                 style={styles.icon} 
-                 name={iconName}
-                 
-                 />}
+              inputStyle ={styles.inputText}                
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={placeholder}
+              multiline = {true}
+              numberOfLines = {numberOfLines}
               // style={styles.input}
               secureTextEntry={secureTextEntry}
             />
@@ -70,7 +67,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderRadius:15,
-    backgroundColor:"rgb(247, 247, 247)"
+    backgroundColor:"red"
   },
   inputText: {
     color: '#064451',
@@ -79,7 +76,10 @@ const styles = StyleSheet.create({
     padding: 1,
     paddingLeft:15,
     marginRight:5,
-    borderRadius:20,
+    borderRadius:10,
+    borderWidth: 1,
+    borderColor: "#013220",
+    width: 300,
   },
   inputContainer: {
     width: 300,
