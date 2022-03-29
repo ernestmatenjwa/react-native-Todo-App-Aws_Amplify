@@ -4,21 +4,25 @@ import { View, Text } from 'react-native';
 import HomeScreen from "./src/Screens/HomeScreen";
 import ProfileScreen from "./src/Screens/profile";
 import FilScreen from "./src/Screens/fil";
-// import SignupScreen from "./src/Screens/Signup";
-// import LoginScreen from "./src/Screens/Login";
+import SignupScreen from "./src/Screens/Signup";
+import LoginScreen from "./src/Screens/Login";
 // import DashBoadScreen from "./src/Screens/dashBoard";
 // import BusinessProfileScreen from "./src/Screens/BusinessProfile";
 // import AdminProfileScreen from "./src/Screens/adminProfile"
 import ProfileEdit from "./src/Screens/EditProfile";
-// import ConfirmEmailScreen from "./src/Screens/ConfirmEmailScreen.js"
-// import ForgotPasswordScreen from "./src/Screens/ForgotPasswordScreen"
-// import NewPasswordScreen from "./src/Screens/NewPasswordScreen"
+import ConfirmEmailScreen from "./src/Screens/ConfirmEmailScreen.js"
+import ForgotPasswordScreen from "./src/Screens/ForgotPasswordScreen"
+import NewPasswordScreen from "./src/Screens/NewPasswordScreen"
 import AllScreen from "./src/Screens/all";
 import CategoriesScreen from "./src/Screens/categories";
 import AddScreen from "./src/Screens/add";
 import UpdateScreen from "./src/Screens/update";
 
-import Iconicons from "react-native-vector-icons/Ionicons"
+import Amplify from 'aws-amplify'
+import awsconfig from './src/aws-exports'
+Amplify.configure(awsconfig)
+
+//import Iconicons from "react-native-vector-icons/Ionicons"
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -32,12 +36,7 @@ const MaterialTopTabs = createMaterialTopTabNavigator();
 
 const TabScreen = () => {
   return(
-    <MaterialTopTabs.Navigator
-    tabBarOptions={{
-      style: { borderTopWidth: 0,   borderTopWidth: 0,
-        elevation: 0 }
-    }}
-  
+    <MaterialTopTabs.Navigator  
     screenOptions={{
       tabBarLabelStyle: {
          fontSize: 12, 
@@ -46,6 +45,8 @@ const TabScreen = () => {
          color: "white"
         }, 
       tabBarStyle: { 
+        borderTopWidth: 0,
+        elevation: 0,
         backgroundColor: "#013220",
         borderTopWidth: 0,
         borderTopWidth: 0
@@ -194,7 +195,7 @@ export default function App() {
           headerBackTitleVisible: false,
         }}
           />
-              {/* 
+              
         <Stack.Screen 
         name="SignupScreen" 
         component={SignupScreen} 
@@ -214,20 +215,23 @@ export default function App() {
         name="LoginScreen" 
         component={LoginScreen} 
         options={{header: () => null}} />
-        <Stack.Screen 
+        {/* <Stack.Screen 
         name="AdminEdit" 
         component={AdminEdit} 
         options={{
           header: () => null
           }} 
-          />
+          /> */}
         <Stack.Screen 
         name="ConfirmEmailScreen" 
         component={ConfirmEmailScreen} 
         options={{
           header: () => null
           }} />
-        <Stack.Screen name="NewPasswordScreen" component={NewPasswordScreen} options={{header: () => null}} /> */}
+        <Stack.Screen 
+        name="NewPasswordScreen" 
+        component={NewPasswordScreen} 
+        options={{header: () => null}} />
     </Stack.Navigator>
   </NavigationContainer>
   );

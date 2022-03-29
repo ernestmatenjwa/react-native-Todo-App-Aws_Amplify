@@ -7,148 +7,135 @@ import { Text,
  Alert,
  FlatList,
  TouchableOpacity,
- TextInput, 
+ ImageBackground, 
  Pressable} from 'react-native';
 import moment from "moment";
 import Iconicons from "react-native-vector-icons/Ionicons"
+import { getAdmin } from "../graphql/queries";
+import { createAdmin } from '../graphql/mutations';
+import { deleteTodo } from '../graphql/mutations';
+import {
+  Auth, 
+  API,
+  graphqlOperation,
+} from 'aws-amplify';
+import gbImage from "../../assets/images/background.jpg"
+import { SearchBar} from "react-native-elements";
+import CustomInput from "../components/CustomInput/CustomInput";
 
 const { width, height } = Dimensions.get("screen");
 
-const data = [
-  {
-    id: '1',
-    title: 'Washing',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '2',
-    title: 'Washing',
-    todo: 'I want to wash blankets',
-    category: 'Personal',
-  },
-  {
-    id: '3',
-    title: 'code',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '4',
-    title: 'daily review',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '5',
-    title: 'Washing',
-    todo: 'I want to wash clothes',
-    category: 'Personal',
-  },
-  {
-    id: '6',
-    title: 'Google meet',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '7',
-    title: 'Play soccer',
-    todo: 'I want to wash clothes',
-    category: 'Personal',
-  },
-  {
-    id: '8',
-    title: 'Cram',
-    todo: 'I want to wash clothes',
-    category: 'School',
-  },
-  {
-    id: '9',
-    title: 'Coding',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '10',
-    title: 'Mjolo',
-    todo: 'I want to wash clothes',
-    category: 'Personal',
-  },
-  {
-    id: '11',
-    title: 'Washing',
-    todo: 'I want to wash clothes',
-    category: 'School',
-  },
-  {
-    id: '12',
-    title: 'Washing',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-];
 export default function AllScreen({ navigation }) {
   const [searchValue, setSearchValue] = React.useState('');
+  const [todo, setTodo] = React.useState([]);
+  const [idd, setID] = React.useState('');
 
-  const filData = searchValue
-  ? data.filter(x => 
-    x.todo.toLowerCase().includes(searchValue.toLowerCase()) || x.title.toLowerCase().includes(searchValue.toLowerCase()) || x.category.toLowerCase().includes(searchValue.toLowerCase())
-    )
-    : data
+  React.useEffect( () => {
+    const fetchUser = async () => {
+      const userInfo = await Auth.currentAuthenticatedUser({ bypassCache: true });
+      if(userInfo){
+        const userData = await API.graphql(
+          graphqlOperation(
+            getAdmin,
+            { id: userInfo.attributes.sub }
+            )
+        )
+        if (userData.data.getAdmin) {
+          return;
+        }
+        const newUser = {
+          id: userInfo.attributes.sub,
+          name: userInfo.username,
+          email: userInfo.attributes.email,
+          phone: "none",
+          imageUrl: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__480.png",
+        }
+        await API.graphql(
+          graphqlOperation(
+            createAdmin,
+            { input: newUser }
+          )
+        )
+      }
+    }
+    fetchUser();
+  }, [])
+  React.useEffect(() => {
+    console.log(searchValue)
+    const fetchTodos = async () => {
+    const userInfo = await Auth.currentAuthenticatedUser({ bypassCache: true });
+    const ID = userInfo.attributes.sub
+    setID(ID);
+      try {
+        const userData = await API.graphql(graphqlOperation(getAdmin, {id: userInfo.attributes.sub}));
+        setTodo(userData.data.getAdmin.todo.items);        
+        return
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    fetchTodos();
+  }, [todo])
+  
+  const del = async (id) => {
+    try{
+        const do_ = {
+            id: id,
+        }
+        const dedm = await API.graphql({query: deleteTodo, variables: {input: do_}});
+        Alert.alert("You have successfully deleted a do")
+    } catch (e) {
+      console.log(e)
+        Alert.alert(e)
+    } 
+    
+  }
 
   return (
-  <View style={styles.container} >
-    <TextInput
-   style={{
-     fontSize: 18,
-     height: 40,
-     width: width/1.1,
-     alignSelf: "center",
-     //marginTop: "-100%",
-     borderWidth: 1,
-     paddingLeft: 20,
-     borderRadius:15,
-     backgroundColor:"rgb(247, 247, 247)"}}
-     placeholder="Search..."
-     placeholderTextColor="#013220"
-     selectionColor="#013220"
-     onChange={(event) => {
-     setSearchValue(event.target.value)
-     }}
-    />
-    <View style={{height: 10}}></View>
-    <View style={{height: height/1.5, backgroundColor: "lightgrey", }}>
+    <ImageBackground source={gbImage}    style={styles.container}>
+    <ImageBackground source={gbImage}   style={{height: height/1.25, backgroundColor: "lightgrey", }}>
+    <View style={styles.child}>
     <FlatList 
-      data={filData}
+      data={todo}
       keyExtractor={item=>item.id}
       renderItem={({item}) => (
         <TouchableOpacity onPress={() => navigation.navigate("UpdateScreen", {todo : item})}>
           <View style={styles.userInfo}>
           <View style={styles.TextSection}>
-          <Pressable 
-          style={{width: "100%", marginLeft: "90%"}}
-          onPress={() => navigation.navigate('AddScreen')}  >   <Iconicons
-          size={30} 
-          color={"#013220"}
-          name="trash" 
-        /></Pressable>
-              <Text style={[styles.UserName, {marginTop: "-10%", color: "#013220", textTransform: "capitalize",  }]}>{item.title}</Text>
-              <Text style={styles.MessageText}>{item.todo}</Text>
+              <Text style={[styles.UserName, { color: "#013220", textTransform: "capitalize",  }]}>{item.title}</Text>
+              <Text style={styles.MessageText}>{item.desc}</Text>
               <View style={{borderTopWidth: 1, borderTopColor: "grey"}}>
-              <Text style={{fontSize: 10}}>created: 1/4/22 /modified: 1/4/22</Text>
+              <Text style={{fontSize: 10}}>CREATED: {moment(item.createdAt).format('DD/MM/YYYY, h:mma')}</Text>
+              <Text style={{fontSize: 10}}>MODIFIED: {moment(item.updatedAt).format('DD/MM/YYYY, h:mma')}</Text>
               </View>
           </View> 
-          </View>
+          </View> 
+          <View>
+                  <Pressable 
+                style={{ marginTop: "-25%", marginLeft: "91%"}}
+                ><Text onPress={() => del(item.id)}  ><Iconicons
+                size={30} 
+                color={"white"}
+                name="trash" 
+              /></Text></Pressable>
+                  </View>
        </TouchableOpacity>
       )}
+      ListEmptyComponent={<View 
+        style={{flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',}}><Text 
+        style={{fontWeight: 'bold', fontSize: 10, color: "green", }}>
+          Sorry we currently do not have todos for you</Text>
+          </View>}
     />
-    </View>
+        </View>
+    </ImageBackground>
 
   <View style={{
      flexDirection: "row", 
      alignSelf: "center",
-     //width: "100%",
+     marginTop: "-20%",
   }}>
     <Iconicons
     size={50} 
@@ -163,46 +150,58 @@ export default function AllScreen({ navigation }) {
     onPress={() => navigation.navigate('ProfileScreen')}  
    />
     </View>
-  </View>
+
+  </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    // flex: 1,
+     alignItems: 'center',
+     justifyContent: 'center',
+     backgroundColor: "lightgrey",
+    // height: height,
+   },
+   child: {
+    width: "100%",
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: "lightgrey"
+    //alignItems: "center",
+    alignContent: "center",
+    //alignSelf: "center",
+    backgroundColor: 'rgba(0,0,0,0.8)'
   },
-  UserName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "grey",
-  },
-  userInfo: {
-    width: width/1.1,
-    //height: 100,
-    backgroundColor: "white",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginHorizontal: 2,
-    marginBottom: 5,
-    //marginTop: 2,
-    borderRadius: 13,
-    padding: 2,  
-  },
-  TextSection: {
-    flexDirection: "column",
-    justifyContent: "center",
-    paddingTop: 1,
-    paddingBottom: 5,
-    marginLeft: 10,
-    width: 300,
-    //height: "50%"
-  },
-  MessageText:{
-    fontWeight: 'bold',
-    fontSize: 12, 
-    color: "grey"
-  },
+   UserName: {
+     fontSize: 16,
+     fontWeight: "bold",
+     color: "grey",
+   },
+   userInfo: {
+     width: width/1.1,
+     //height: "40%",
+     backgroundColor: "white",
+     flexDirection: "row",
+     borderWidth: 1,
+     //justifyContent: "space-between",
+     //marginHorizontal: 2,
+     marginRight: "10%",
+     marginTop: 5,
+     borderTopRightRadius: 13,
+     borderBottomRightRadius: 13, 
+     //padding: 2, borderRadiusTop: 13,  
+   },
+   TextSection: {
+     flexDirection: "column",
+     justifyContent: "center",
+     paddingTop: 1,
+     paddingBottom: 5,
+     marginLeft: 10,
+     width: 300,
+     height: 100
+   },
+   MessageText:{
+     fontWeight: 'bold',
+     fontSize: 12, 
+     color: "grey"
+   },
 })

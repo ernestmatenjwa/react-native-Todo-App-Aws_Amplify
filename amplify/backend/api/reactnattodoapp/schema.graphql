@@ -1,0 +1,14 @@
+type Admin @model @auth(rules: [{ allow: public }]){
+  id: ID!
+  name: String!
+  email: String!
+  phone: String!
+  imageUrl: String
+  todo: [Todo] @hasMany
+}
+type Todo @model @auth(rules: [{ allow: public }]){
+  id: ID!
+  desc: String!
+  title: String!
+  category: String!
+}

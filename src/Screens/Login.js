@@ -1,6 +1,6 @@
 import  React, {useState} from 'react';
 import { Alert,SafeAreaView, Text, Pressable, ImageBackground, StyleSheet, View } from 'react-native';
-import gbImage from '../../assets/pictures/homeBG3.jpg';
+import gbImage from "../../assets/images/background.jpg"
 import CustomInput from '../components/CustomInput/CustomInput';
 import {useForm, Controller} from 'react-hook-form';
 import {Auth} from 'aws-amplify';
@@ -20,7 +20,7 @@ export default function LoginScreen({ navigation }) {
     setLoading(true);
     try{
       await Auth.signIn(data.username, data.password)
-      navigation.navigate('LocationScreen');  
+      navigation.navigate('DashBoadScreen');  
     }
     catch(e){
       Alert.alert('Failed', e.message);
@@ -34,6 +34,7 @@ export default function LoginScreen({ navigation }) {
   };
   return (
     <ImageBackground source={gbImage}  style={styles.container}>
+      <View style={styles.child}>
       <View style={styles.frame}>
           <Text style={styles.title}>Log In</Text>
           <SafeAreaView>
@@ -72,13 +73,6 @@ export default function LoginScreen({ navigation }) {
              <Text style={styles.text}>{loading ? 'Loading...': "Sign In"} </Text>
             </Pressable> 
             <View style={styles.space} />
-            <Pressable 
-               style={styles.loginG} 
-               onPress={() => {
-              //  Sign in with Google
-              }}>
-             <Text style={styles.text}>Log in with google+ </Text>
-            </Pressable>
             <View style={styles.space} />     
             <Text style={styles.label}> Don't have an account?
              <Pressable style={styles.label}
@@ -89,9 +83,8 @@ export default function LoginScreen({ navigation }) {
               </Pressable>
             </Text> 
             <View style={styles.space} />
-
-            {/* Social Icons */}
           </SafeAreaView>
+      </View>
       </View>
     </ImageBackground>
   );
@@ -106,6 +99,15 @@ const styles = StyleSheet.create({
     borderRadius:15,
     backgroundColor:"rgb(247, 247, 247)"
   },
+  child: {
+    width: "100%",
+    flex: 1,
+    alignItems: "center",
+    alignContent: "center",
+    alignSelf: "center",
+    justifyContent: "center",
+    backgroundColor: 'rgba(0,0,0,0.8)'
+  },
   inputText: {
     color: '#064451',
     fontWeight:'normal',
@@ -117,13 +119,13 @@ const styles = StyleSheet.create({
   inputContainer: {
     height: 50,
     borderRadius:20,
-    borderColor: '#064451',
+    borderColor: '#013220',
     borderWidth: 1,  
     paddingRight:10,
     backgroundColor:"rgb(247, 247, 247)",
   },
   icon:{
-    color:'#064451',
+    color:'#013220',
     width:20,
   },
   card:{
@@ -134,14 +136,14 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     textAlign:'right',
     marginRight:15,  
-    color: '#064451'
+    color: '#013220'
   
   },
   label: {
     overflow: 'visible',
     fontWeight: "300",
     //fontFamily: `"Inter-Bold", "Inter", sans-serif`,
-    color: '#064451',
+    color: '#013220',
     fontSize: 18,  
     marginLeft: 15,
     marginBottom: 10,
@@ -165,14 +167,14 @@ const styles = StyleSheet.create({
     backgroundColor: "rgb(247, 247, 247)",
     overflow: "visible",
     borderRadius: 15,
-   
+    opacity: 0.4,
   },
    title: {
       textAlign: 'center',
       marginTop: 25,
       overflow: 'visible',
       fontWeight: "700",
-      color: '#064451',
+      color: '#013220',
       fontSize: 20,  
       marginBottom: 30,    
   },
@@ -187,9 +189,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 15,
     elevation: 3,
-    backgroundColor: '#064451',
+    backgroundColor: '#013220',
     borderWidth:2,
-    borderColor: '#064451',
+    borderColor: '#013220',
     width: '94%',
     height: 50,
     marginLeft: 10,
@@ -203,7 +205,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     backgroundColor: "rgb(11, 111, 131)",
     borderWidth:2,
-    borderColor: '#064451',
+    borderColor: '#013220',
     width: '94%',
     height: 50,
     marginLeft: 10,
@@ -211,7 +213,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18,
     fontWeight:"bold",
-    lineHeight: 21,
+    //lineHeight: 21,
     letterSpacing: 0.25,
     color: 'white',
   },

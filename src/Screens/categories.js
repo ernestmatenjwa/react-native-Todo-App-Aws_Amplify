@@ -3,128 +3,74 @@ import React from 'react';
 import { Text,
   View, 
   StyleSheet,
- Dimensions,
+  ImageBackground,
  Alert,
  FlatList,
  TouchableOpacity,
-Image } from 'react-native';
+ Dimensions } from 'react-native';
 import moment from "moment";
+import { getAdmin } from "../graphql/queries";
+import {
+  Auth, 
+  API,
+  graphqlOperation,
+} from 'aws-amplify';
+import gbImage from "../../assets/images/background.jpg"
 
+const { width, height } = Dimensions.get("screen");
 
-const data = [
-  {
-    id: '1',
-    title: 'Washing',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '2',
-    title: 'Washing',
-    todo: 'I want to wash blankets',
-    category: 'Personal',
-  },
-  {
-    id: '3',
-    title: 'code',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '4',
-    title: 'daily review',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '5',
-    title: 'Washing',
-    todo: 'I want to wash clothes',
-    category: 'Personal',
-  },
-  {
-    id: '6',
-    title: 'Google meet',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '7',
-    title: 'Play soccer',
-    todo: 'I want to wash clothes',
-    category: 'Personal',
-  },
-  {
-    id: '8',
-    title: 'Cram',
-    todo: 'I want to wash clothes',
-    category: 'School',
-  },
-  {
-    id: '9',
-    title: 'Coding',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-  {
-    id: '10',
-    title: 'Mjolo',
-    todo: 'I want to wash clothes',
-    category: 'Personal',
-  },
-  {
-    id: '11',
-    title: 'Washing',
-    todo: 'I want to wash clothes',
-    category: 'School',
-  },
-  {
-    id: '12',
-    title: 'Washing',
-    todo: 'I want to wash clothes',
-    category: 'work',
-  },
-];
 export default function CategoriesScreen({ navigation }) {
   const [workC,setWork] = React.useState([0]);
   const [schoolC,setSchool] = React.useState(0);
   const [personalC,setPersonal] = React.useState(0);
+  const [todo, setTodo] = React.useState([]);
   let work = 0
   let school = 0
   let personal = 0
-
   React.useEffect(() => {
-      for (let i = 0; i < data.length; i++) {
-        if(data[i].category === "School"){
-          school = school + 1,
-          console.log("school", school)
+    const fetchTodos = async () => {
+    const userInfo = await Auth.currentAuthenticatedUser({ bypassCache: true });
+    try {
+      const userData = await API.graphql(graphqlOperation(getAdmin, {id: userInfo.attributes.sub}));
+      setTodo(userData.data.getAdmin.todo.items); 
+     //console.log(userData.data.getAdmin.todo.items[1].category)
+      for (let i = 0; i < userData.data.getAdmin.todo.items.length; i++) {
+        //console.log("if")
+        if(userData.data.getAdmin.todo.items[i].category === "school"){
+          school = school + 1
         }
-        if(data[i].category === "Personal"){
-          personal = personal + 1,
-          console.log("personal", personal)
+        if(userData.data.getAdmin.todo.items[i].category === "personal"){
+          personal = personal + 1
         }
-        if(data[i].category === "work"){
-          work = work + 1,
-          console.log("work", work)
+        if(userData.data.getAdmin.todo.items[i].category === "work"){
+          work = work + 1
         }
       }
       setPersonal(personal)
       setSchool(school)
       setWork(work)
-  }, [])
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  fetchTodos();
+
+  }, [todo])
 
   return (
-  <View style={{backgroundColor: "lightgrey"}} >
-    <TouchableOpacity onPress={() => navigation.navigate("FilScreen", {category : "Work"})} style={{paddingLeft: 5, borderTopWidth: 1, height: "50%", borderTopColor: "grey", backgroundColor:"white", alignContent: "center",}}>
-        <Text style={{fontSize: 18, color:"grey", paddingTop: "5%"}}>Work ({workC})</Text>
+  <ImageBackground source={gbImage} style={styles.container}>
+    <View style={styles.child}>
+    <TouchableOpacity onPress={() => navigation.navigate("FilScreen", {category : "Work"})} style={{paddingLeft: 5, borderTopWidth: 1, height: 60, borderTopColor: "black", backgroundColor:"white", opacity: 0.5, alignContent: "center",}}>
+        <Text style={{fontSize: 20, color:"#013220", fontWeight: 'bold', paddingTop: "5%"}}>Work ({workC})</Text>
     </TouchableOpacity>
-    <TouchableOpacity onPress={() => navigation.navigate("FilScreen", {category : "School"})} style={{paddingLeft: 5, borderTopWidth: 1, height: "50%", borderTopColor: "grey", backgroundColor:"white", alignContent: "center", }}>
-        <Text style={{fontSize: 18, color:"grey", paddingTop: "5%"}}>School ({schoolC})</Text>
+    <TouchableOpacity onPress={() => navigation.navigate("FilScreen", {category : "School"})} style={{paddingLeft: 5,opacity: 0.5, borderTopWidth: 1, height: 60, borderTopColor: "black", backgroundColor:"white", alignContent: "center", }}>
+        <Text style={{fontSize: 20, color:"#013220", fontWeight: 'bold', paddingTop: "5%"}}>School ({schoolC})</Text>
     </TouchableOpacity>
-    <TouchableOpacity onPress={() => navigation.navigate("FilScreen", {category : "Personal"})} style={{paddingLeft: 5, borderTopWidth: 1, height: "50%", borderTopColor: "grey", backgroundColor:"white", alignContent: "center", }}>
-        <Text style={{fontSize: 18, color:"grey", paddingTop: "5%"}}>Personal ({personalC})</Text>
+    <TouchableOpacity onPress={() => navigation.navigate("FilScreen", {category : "Personal"})} style={{paddingLeft: 5,opacity: 0.5, borderTopWidth: 1, height: 60, borderTopColor: "black", backgroundColor:"white", alignContent: "center", }}>
+        <Text style={{fontSize: 20, color:"#013220", fontWeight: 'bold', paddingTop: "5%"}}>Personal ({personalC})</Text>
     </TouchableOpacity>
     </View>
+    </ImageBackground>
   );
 }
 
@@ -134,5 +80,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: "lightgrey"
+  },
+  child: {
+    width: "100%",
+    flex: 1,
+    //alignItems: "center",
+    alignContent: "center",
+    //alignSelf: "center",
+    backgroundColor: 'rgba(0,0,0,0.8)'
   },
 })

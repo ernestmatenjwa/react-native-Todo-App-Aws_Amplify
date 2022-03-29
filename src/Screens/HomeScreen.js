@@ -5,12 +5,14 @@ export default function HomeScreen({ navigation, route }) {
   //const {data} = route?.params || {};
   return (
     <ImageBackground source={gbImage} style={styles.container}>
+       <View style={styles.child}>
      <Text style={styles.titlee}>my todo app</Text>
      <View style={styles.space} />
      <Pressable 
       style={styles.getstarted} 
-      onPress={() =>  navigation.push("DashBoadScreen")}
+      onPress={() =>  navigation.push("LoginScreen")}
      ><Text style={styles.text}>GET STARTED</Text></Pressable>
+     </View>
   </ImageBackground>
   );
 }
@@ -20,6 +22,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  child: {
+    width: "100%",
+    flex: 1,
+    alignItems: "center",
+    alignContent: "center",
+    //alignSelf: "center",
+    backgroundColor: 'rgba(0,0,0,0.9)'
   },
   titlee: {
       position: 'absolute',
